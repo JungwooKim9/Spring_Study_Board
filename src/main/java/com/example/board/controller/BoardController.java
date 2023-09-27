@@ -2,6 +2,8 @@ package com.example.board.controller;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +24,9 @@ public class BoardController {
 	private final BoardService boardService;
 
 	@GetMapping("/save")
-	public String saveForm() {return "save";}
+	public String saveForm() {
+		return "save";
+	}
 
 	@PostMapping("/save")
 	public String save(@ModelAttribute BoardDTO boardDTO) {
@@ -51,4 +55,30 @@ public class BoardController {
 		return "detail";
 	}
 
+	@GetMapping("/update/{id}")
+	public String updateForm(@PathVariable long id, Model model) {
+		BoardDTO boardDTO = boardService.findById(id);
+		model.addAttribute("boardUpdate", boardDTO);
+		return "update";
+	}
+
+	@PostMapping("/update")
+	public String update(@ModelAttribute BoardDTO boardDTO, Model model) {
+		BoardDTO board = boardService.update(boardDTO);
+		model.addAttribute("board", board);
+		return "detail";
+		// return "redirect:/board/" + boardDTO.getId(); 조회수에 영향을 줌
+	}
+
+	@GetMapping("/delete/{id}")
+	public String delete(@PathVariable long id) {
+		boardService.delete(id);
+		return "redirect:/board/";
+	}
+
+	@GetMapping("/paging")
+	public String paging(@PageableDefault(page = 1) Pageable pageable, Model model) {
+		// pageable.get
+		return null;
+	}
 }
